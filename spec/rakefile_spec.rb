@@ -38,4 +38,20 @@ describe 'Rakefile' do
       Rake::Task[:arguments].invoke('xxfoobarxx')
     end
   end
+
+  context "namespace failures" do
+    it 'should stop at first fail' do
+      expect($stdout).to receive(:puts).with("Namespace 'failures' task 'foo'")
+      expect { Rake::Task[:failures].invoke }.to raise_error(RuntimeError, "FOO NO PLAY")
+    end
+  end
+
+  context "namespace aggregate_failures" do
+    it 'should stop after all tasks' do
+      expect($stdout).to receive(:puts).with("Namespace 'aggregate_failures' task 'foo'")
+      expect($stdout).to receive(:puts).with("Namespace 'aggregate_failures' task 'bar'")
+      expect { Rake::Task[:aggregate_failure].invoke }.to raise_error(GroupedError)
+    end
+  end
+
 end
