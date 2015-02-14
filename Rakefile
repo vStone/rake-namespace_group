@@ -39,3 +39,29 @@ namespace_group :arguments, :arguments => :bar do
     puts "Namespace 'arguments' task 'foo' argument: '#{args[:bar]}'"
   end
 end
+
+namespace_group :failures, :keep_going => false do
+  task :bar do |task|
+    puts "Namespace 'failures' task 'bar'"
+    raise "BAR NO PLAY EITHER"
+  end
+
+  task :foo do |task|
+    puts "Namespace 'failures' task 'foo'"
+    raise "FOO NO PLAY"
+  end
+end
+# Fix ordering for tests
+task :failures => ['failures:foo', 'failures:bar' ]
+
+namespace_group :aggregate_failure, :keep_going => true do
+  task :foo do |task|
+    puts "Namespace 'aggregate_failures' task 'foo'"
+    raise "FOO NO PLAY"
+  end
+
+  task :bar do |task|
+    puts "Namespace 'aggregate_failures' task 'bar'"
+    raise "BAR NO PLAY EITHER"
+  end
+end
