@@ -22,6 +22,10 @@ module Rake
     #
     #
     def namespace_group(name=nil, options={}, &block)
+      if options.is_a?(Symbol) or options.is_a?(Array)
+        options = { :arguments => options }
+      end
+
       ns_name = options[:namespace] || name
       ns = namespace(ns_name) do
         if block_given?
@@ -37,7 +41,7 @@ module Rake
         tasklist = Rake.application.tasks_in_scope(scope)
         tasklist.each do |task|
           if options[:all] or task.is_a?(Rake::GroupTask)
-            task.invoke(args)
+            task.invoke(*args)
           end
         end
       end
