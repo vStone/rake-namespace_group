@@ -1,4 +1,4 @@
-class GroupedError < RuntimeError
+class GroupedError < Exception
   attr_reader :exceptions
 
   def initialize(message)
@@ -10,7 +10,18 @@ class GroupedError < RuntimeError
   end
 
   def message
-    "Failed Tasks: #{@exceptions.keys.inspect}"
+    "failed tasks: #{@exceptions.keys.inspect}"
+  end
+
+  def backtrace
+    backtrace = []
+    exceptions.each do |e,v|
+      backtrace << "[#{e}] #{v[:exception].message}"
+      if v[:exception].is_a?(GroupedError)
+        backtrace << v[:exception].backtrace
+      end
+    end
+    backtrace.flatten
   end
 
   def trace
