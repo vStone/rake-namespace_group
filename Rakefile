@@ -38,3 +38,10 @@ namespace_group :original do
     puts "Namespace 'original' task 'bar'"
   end
 end
+
+namespace_group :arguments, :arguments => :bar do
+  desc "Namespace 'arguments' task 'foo'"
+  task :foo, :bar, :ext do |task, args|
+    puts "Namespace 'arguments' task 'foo' argument: '#{args[:bar]}'"
+  end
+end
