@@ -27,6 +27,10 @@ module Rake
         options = { :arguments => options }
       end
 
+      options[:arguments] ||= []
+      options[:all] ||= false
+      options[:keep_going] ||= true
+
       ns_name = options[:namespace] || name
       ns = namespace(ns_name) do
         if block_given?
@@ -38,7 +42,7 @@ module Rake
       scope = ns.scope
 
       desc options[:desc] || "Execute all tasks in group #{ns_name}"
-      task ns_name, (options[:arguments] || []) do |_self, args|
+      task ns_name, options[:arguments] do |_self, args|
         tasklist = Rake.application.tasks_in_scope(scope)
         exception_list = GroupedError.new(ns_name)
         tasklist.each do |task|
