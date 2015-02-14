@@ -1,4 +1,5 @@
 require 'rake/namespace_group/group_task'
+require 'rake/namespace_group/grouped_error'
 
 module Rake
   module DSL
@@ -39,11 +40,22 @@ module Rake
       desc options[:desc] || "Execute all tasks in group #{ns_name}"
       task ns_name, (options[:arguments] || []) do |_self, args|
         tasklist = Rake.application.tasks_in_scope(scope)
+        exception_list = GroupedError.new(ns_name)
         tasklist.each do |task|
           if options[:all] or task.is_a?(Rake::GroupTask)
-            task.invoke(*args)
+            begin
+              task.invoke(*args)
+            rescue Exception => ex
+              exception_list.add_exception(task, ex)
+              unless options[:keep_going]
+                raise ex
+              end
+            end
           end
         end
+        if exception_list.has_exceptions?
+          raise exception_list
+         end
       end
     end
   end
