@@ -26,4 +26,16 @@ describe 'Rakefile' do
       Rake::Task[:original].invoke()
     end
   end
+
+  context "namespace arguments" do
+    it 'should detect the arguments' do
+      expect(Rake::Task[:arguments].arg_names).to eq([:bar])
+      expect(Rake::Task['arguments:foo'].arg_names).to eq([:bar, :ext])
+    end
+
+    it 'should pass the arguments' do
+      expect($stdout).to receive(:puts).with("Namespace 'arguments' task 'foo' argument: 'xxfoobarxx'")
+      Rake::Task[:arguments].invoke('xxfoobarxx')
+    end
+  end
 end
