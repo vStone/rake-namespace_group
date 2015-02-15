@@ -1,8 +1,9 @@
 class GroupedError < Exception
   attr_reader :exceptions
 
-  def initialize(message)
+  def initialize(message=nil)
     @exceptions = {}
+    @message = message
   end
 
   def add_exception(task, exception)
@@ -10,7 +11,7 @@ class GroupedError < Exception
   end
 
   def message
-    "failed tasks: #{@exceptions.keys.inspect}"
+    @message || "failed tasks: #{@exceptions.keys.inspect}"
   end
 
   def backtrace
