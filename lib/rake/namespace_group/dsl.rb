@@ -30,6 +30,7 @@ module Rake
       options[:arguments] ||= []
       options[:all] ||= false
       options[:keep_going] ||= true
+      options[:exclude] ||= []
 
       ns_name = options[:namespace] || name
       ns = namespace(ns_name) do
@@ -46,7 +47,18 @@ module Rake
         tasklist = Rake.application.tasks_in_scope(scope)
         exception_list = GroupedError.new(ns_name)
         tasklist.each do |task|
+          task_name = task.name.gsub(Regexp.new("^#{ns_name}:"), '')
           if options[:all] or task.is_a?(Rake::GroupTask)
+            skip = false
+            [options[:exclude]].flatten.each do |excl|
+              if excl.is_a?(Regexp) and task_name =~ excl
+                skip = true
+              elsif excl.is_a?(String) and task_name == excl
+                skip = true
+              end
+            end
+            next if skip
+
             begin
               task.invoke(*args)
             rescue Exception => ex
@@ -59,7 +71,7 @@ module Rake
         end
         if exception_list.has_exceptions?
           raise exception_list
-         end
+        end
       end
     end
   end

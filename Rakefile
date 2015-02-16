@@ -65,3 +65,31 @@ namespace_group :aggregate_failure, :keep_going => true do
     raise "BAR NO PLAY EITHER"
   end
 end
+
+namespace_group :exclude_single, :exclude => /^foo$/ do |ns|
+  task :foo do |task|
+    puts "Namespace 'exclude_single' task 'foo'"
+  end
+
+  task :bar do |task|
+    puts "Namespace 'exclude_single' task 'bar'"
+  end
+end
+
+namespace_group :exclude_multi, :exclude => [/^ignore/, /foo/ ] do
+  task :ignore_foo do |task|
+    puts "Namespace 'exclude_multi' task 'ignore_foo'"
+  end
+
+  task :ignore_bar do |task|
+    puts "Namespace 'exclude_multi' task 'ignore_bar'"
+  end
+
+  task :foo do |task|
+    puts "Namespace 'exclude_multi' task 'foo'"
+  end
+
+  task :bar do |task|
+    puts "Namespace 'exclude_multi' task 'bar'"
+  end
+end
