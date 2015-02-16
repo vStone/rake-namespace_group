@@ -54,4 +54,23 @@ describe 'Rakefile' do
     end
   end
 
+  context "exclude_single" do
+    it 'should exclude jobs with a single regex' do
+      expect($stdout).to receive(:puts).with("Namespace 'exclude_single' task 'bar'")
+      expect($stdout).to_not receive(:puts).with("Namespace 'exclude_single' task 'foo'")
+      Rake::Task[:exclude_single].invoke
+    end
+  end
+
+  context "exclude_multi" do
+    it 'should exclude jobs with multiple regexes given' do
+      expect($stdout).to receive(:puts).with("Namespace 'exclude_multi' task 'bar'")
+      expect($stdout).to_not receive(:puts).with("Namespace 'exclude_multi' task 'foo'")
+      expect($stdout).to_not receive(:puts).with("Namespace 'exclude_multi' task 'ignore_bar'")
+      expect($stdout).to_not receive(:puts).with("Namespace 'exclude_multi' task 'ignore_foo'")
+
+      Rake::Task[:exclude_multi].invoke
+    end
+  end
+
 end
